@@ -214,12 +214,6 @@ vector<pair<int, int>> legalMoves(Board& board, Tile t)
 			}
 		}
 	}
-
-	cout << "Available machine moves:" << endl;
-	for(int i = 0; i < moves.size(); i++)
-	{
-		cout << moves[i].first << "\t" << moves[i].second << endl;
-	}
 	return moves;
 }
 
@@ -256,7 +250,6 @@ int smartMachineMove(Board& board, Tile& machine, Tile& player, map<pair<int, in
 
 			pair<int, int> scores = count(copy);
 			standings[*it] = static_cast<float>(scores.first)/static_cast<float>(scores.second);
-			printBoard(copy);
 		}
 
 		pair<int, int> bestMove = moves[0];
