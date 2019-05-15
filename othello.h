@@ -2,22 +2,11 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include "board.h"
 
 using namespace std;
 
-enum Tile {empty, black, white};
-
 using Board = Tile[8][8];
-
-Board& initBoard(Board& board);
-
-void printTile(const Tile& t);
-
-pair<int, int> count(const Board& board);
-
-void printBoard(const Board& board);
-
-void turnTile(Tile& t);
 
 bool checkEnclosed(Board& board, int x, int y, int dx, int dy, Tile t);
 

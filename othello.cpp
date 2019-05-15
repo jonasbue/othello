@@ -2,101 +2,12 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include "board.h"
 #include "othello.h"
 
 using namespace std;
 
 using Board = Tile[8][8];
-
-Board& initBoard(Board& board)
-{
-	for(int x = 0; x < 8; x++)
-	{
-		for(int y = 0; y < 8; y++)
-		{
-			board[x][y] = empty;
-		}
-	}
-	board[3][3] = white;
-	board[3][4] = black;
-	board[4][3] = black;
-	board[4][4] = white;
-	return board;
-}
-
-void printTile(const Tile& t)
-{
-	switch(t)
-	{
-		case empty:
-			cout << "_";
-			break;
-		case black:
-			cout << "o";
-			break;
-		case white:
-			cout << "x";
-			break;
-		default:
-			throw invalid_argument("Tile not valid");
-	}
-}
-
-void printBoard(const Board& board)
-{
-	pair<int, int> scores = count(board);
-	cout << "  _ _ _ _ _ _ _ _  " << endl;
-	for(int y = 0; y < 8; y++)
-	{
-		cout << " ";
-		for(int x = 0; x < 8; x++)
-		{
-			cout << "|";
-			printTile(board[y][x]);
-		}
-		cout << "|" << y;
-		if(y == 1)
-		{
-			cout << "\tBlack: ";
-			printTile(black);
-		}
-		if(y == 2)
-		{
-			cout << "\tWhite: ";
-			printTile(white);
-		}
-		if(y == 4)
-		{
-			cout << "\tScores:";
-		}
-		if(y == 5)
-		{
-			cout << "\tBlack: " << scores.first;
-		}
-		if(y == 6)
-		{
-			cout << "\tWhite: " << scores.second;
-		}
-		cout << endl;
-	}
-	cout << "  0 1 2 3 4 5 6 7 " << endl;
-}
-
-void turnTile(Tile& t)
-{
-	switch(t)
-	{
-		case black:
-			t = white;
-			break;
-		case white:
-			t = black;
-			break;
-		default:
-			throw invalid_argument("Tile not recognized as black or white.");
-			break;
-	}
-}
 
 bool checkEnclosed(Board& board, int x, int y, int dx, int dy, Tile t)
 {
@@ -228,42 +139,54 @@ int machineMove(Board& board, Tile t)
 	return moves.size();
 }
 
+// Simulates one of the legal moves. Adds the move and outcome on board to map of legal moves 
+void simulateMove(Board& board, vector<pair<int, int>>& moves, map<pair<int, int>, float>& standings, Tile& machine)
+{
+	for(vector<pair<int, int>>::iterator it = moves.begin(); it != moves.end(); it++)
+	{
+		Board copy;
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				copy[i][j] = board[i][j];
+			}
+		}
+		placeTile(copy, it->second, it->first, machine);
+
+		pair<int, int> scores = count(copy);
+		standings[*it] = static_cast<float>(scores.first)/static_cast<float>(scores.second);
+		//printBoard(copy); // Might be useful when debugging
+	}
+}
+
+// Iterates through map of legal moves and their outcomes.
+// Returns the move that corresponds to the best outcome.
+pair<int, int> selectBestMove(vector<pair<int, int>>& moves, map<pair<int, int>, float>& standings)
+{
+	pair<int, int> bestMove = moves[0];
+	for(vector<pair<int, int>>::iterator it = moves.begin(); it != moves.end(); it++)
+	{
+		if(standings[*it] < standings[bestMove])
+		{
+			bestMove.first = it->first;
+			bestMove.second = it->second;
+		}
+	}
+	return bestMove;
+}
+
 int smartMachineMove(Board& board, Tile& machine, Tile& player, map<pair<int, int>, float>& standings, int maxDepth = 1, int depth=0)
 {
 	vector<pair<int, int>> moves = legalMoves(board, machine);
 	if(moves.size())
 	{
-		for(vector<pair<int, int>>::iterator it = moves.begin(); it != moves.end(); it++)
-		{
-			Board copy;
-			for(int i = 0; i < 8; i++)
-			{
-				for(int j = 0; j < 8; j++)
-				{
-					copy[i][j] = board[i][j];
-				}
-			}
-			placeTile(copy, it->second, it->first, machine);
-
-			pair<int, int> scores = count(copy);
-			standings[*it] = static_cast<float>(scores.first)/static_cast<float>(scores.second);
-			//printBoard(copy); // Might be useful when debugging
-		}
-
-		pair<int, int> bestMove = moves[0];
-		for(vector<pair<int, int>>::iterator it = moves.begin(); it != moves.end(); it++)
-		{
-			if(standings[*it] < standings[bestMove])
-			{
-				bestMove.first = it->first;
-				bestMove.second = it->second;
-			}
-		}
+		simulateMove(board, moves, standings, machine);
+		pair<int, int> bestMove = selectBestMove(moves, standings);
 		placeTile(board, bestMove.second, bestMove.first, machine);	
 	}
 	return moves.size();
 }
-
 
 int playerMove(Board& board, Tile& t)
 {
@@ -285,21 +208,6 @@ int playerMove(Board& board, Tile& t)
 		return placeTile(board, x, y, t);
 	}
 	else return 0;
-}
-
-pair<int, int> count(const Board& board)
-{
-	int b = 0;
-	int w = 0;
-	for(int i = 0; i < 8; i++)
-	{
-		for(int j = 0; j < 8; j++)
-		{
-			if(board[j][i] == white) w++;
-			else if(board[j][i] == black) b++;
-		}
-	}
-	return make_pair(b, w);
 }
 
 void declareWinner(Board& board)
