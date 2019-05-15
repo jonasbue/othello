@@ -2,14 +2,9 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include "othello.h"
 
 using namespace std;
-
-// a)
-
-enum Tile {empty, black, white};
-
-// b)
 
 using Board = Tile[8][8];
 
@@ -46,8 +41,6 @@ void printTile(const Tile& t)
 			throw invalid_argument("Tile not valid");
 	}
 }
-
-pair<int, int> count(const Board& board);
 
 void printBoard(const Board& board)
 {
@@ -88,8 +81,6 @@ void printBoard(const Board& board)
 	}
 	cout << "  0 1 2 3 4 5 6 7 " << endl;
 }
-
-// d)
 
 void turnTile(Tile& t)
 {
@@ -381,7 +372,6 @@ void takeTurns(Board& board, Tile& player, Tile& opponent)
 	}	
 }
 
-
 void play(Board& board)
 {
 	cout << "Othello" << endl << endl;
@@ -404,14 +394,4 @@ void play(Board& board)
 
 	takeTurns(board, player, opponent);
 	declareWinner(board);
-}
-
-int main()
-{
-	srand(time(nullptr));
-
-	Board b;
-	initBoard(b);
-	play(b);
-	return 0;
 }
