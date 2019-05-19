@@ -70,8 +70,7 @@ void takeTurns(Board& board, Tile& player, Tile& opponent)
 			printBoard(board);
 
 			if(scores.first == 0 || scores.second == 0) break;
-			map<pair<int, int>, float> standings;
-			legalMachineMoves = smartMachineMove(board, opponent, player, standings, 1, 0);
+			legalMachineMoves = smartMachineMove(board, opponent, player, 1, 0);
 			cout << "Computer's turn... " << endl;
 			printBoard(board);
 

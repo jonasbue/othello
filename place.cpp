@@ -13,7 +13,7 @@ bool checkEnclosed(Board& board, int x, int y, int dx, int dy, Tile t)
 	Tile opp; // Opposite colour
 	if(colour == black) { opp = white; }
 	else if(colour == white) { opp = black; }
-	else throw invalid_argument("Tile not recognized as black or white.");
+	else throw invalid_argument("Tile not recognized as black or white."); 
 
 	int posX = x + dx;
 	int posY = y + dy;
@@ -61,8 +61,9 @@ bool placeTile(Board& board, int y, int x, Tile t)
 	if(t == empty) { throw invalid_argument("Cannot place an empty tile."); }
 	if(board[x][y] != empty) 
 	{
-		cout << "That move is invalid. "
-			<< "You cannot place a piece on an occupied tile." << endl;
+		//printBoard(board);
+		//cout << t <<  "That move is invalid. "
+			//<< "You cannot place a piece on an occupied tile." << endl;
 		return 0;
 	}
 	board[x][y] = t;
@@ -82,9 +83,9 @@ bool placeTile(Board& board, int y, int x, Tile t)
 	if(!turned)
 	{
 		board[x][y] = empty;
-		cout << "That move is invalid. "
-		<< "You must enclose at least one tile of your opponents color." 
-		<< endl;
+		//cout << "That move is invalid. "
+		//<< "You must enclose at least one tile of your opponents color." 
+		//<< endl;
 	}
 	return turned;
 }
