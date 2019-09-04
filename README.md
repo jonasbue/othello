@@ -1,5 +1,3 @@
 # othello
 
-Allows you to play othello against a simple computer opponent.
-
-To build, compile othellp.cpp with preferred compiler.
+Terminal based othello game played against a simple computer opponent.
